@@ -4,9 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/server.js",
+    "build": "tsc",
     "dev": "nodemon src/server.ts",
     "migrate:make": "knex migrate:make",
-    "migrate:latest": "knex migrate:latest",
+    "migrate:latest": "knex migrate:latest --env production",
     "seed:make": "knex seed:make",
     "seed:run": "knex seed:run"
   },
