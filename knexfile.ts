@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { Knex } from 'knex';
 
-// Load environment variables from .env file
 dotenv.config();
 
 const knexConfig: { [key: string]: Knex.Config } = {
@@ -9,10 +8,11 @@ const knexConfig: { [key: string]: Knex.Config } = {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
+      port: Number(process.env.DB_PORT) || 5432,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
+      requestTimeout: 60000,
     },
     pool: {
       min: 2,
@@ -31,9 +31,11 @@ const knexConfig: { [key: string]: Knex.Config } = {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT) || 5432, 
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
+      requestTimeout: 60000,
     },
     pool: {
       min: 2,
