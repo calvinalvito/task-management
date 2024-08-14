@@ -7,19 +7,22 @@ import userRouter from "./routes/userRoutes";
 import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
-const port = process.env.PORT || 3000;
 
+// Konversi PORT dari string ke number
+const port = parseInt(process.env.PORT || "3000", 10);
+
+// Inisialisasi database
 const db = knex(knexConfig.development);
 
 // Middleware
 app.use(cors());
 app.use(json());
 
-// Routes
+// Rute
 app.use("/api", userRouter);
 app.use("/api", taskRoutes);
 
-// Check database connection
+// Cek koneksi database
 const checkDatabaseConnection = async () => {
   try {
     await db.raw("SELECT 1+1 as result");
@@ -30,8 +33,8 @@ const checkDatabaseConnection = async () => {
 };
 checkDatabaseConnection();
 
-// Start server
-app.listen(port, () => {
+// Mulai server
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
 
