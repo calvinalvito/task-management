@@ -1,10 +1,13 @@
 import express from "express";
 import cors from "cors";
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import { json } from "body-parser";
 import knex from "knex";
 import knexConfig from "../knexfile";
 import userRouter from "./routes/userRoutes";
 import taskRoutes from "./routes/taskRoutes";
+const swaggerDocument = YAML.load('apidoc.yaml');
 
 const app = express();
 
@@ -21,6 +24,7 @@ app.use(json());
 // Rute
 app.use("/api", userRouter);
 app.use("/api", taskRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Cek koneksi database
 const checkDatabaseConnection = async () => {

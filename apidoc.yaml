@@ -1,0 +1,167 @@
+openapi: 3.0.0
+info:
+  title: Task Management API
+  description: API for managing tasks
+  version: 1.0.0
+servers:
+  - url: https://task-management-production-5c88.up.railway.app/api
+paths:
+  /users:
+    get:
+      summary: Get All Users
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: Invalid request
+  /login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Unauthorized
+  /task:
+    get:
+      summary: Get All Tasks
+      responses:
+        "200":
+          description: A list of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+    post:
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                due_date:
+                  type: string
+                  format: date-time
+                is_complete:
+                  type: boolean
+                assignee_id:
+                  type: integer
+                created_at:
+                  type: string
+                  format: date-time
+                updated_at:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: Task created successfully
+        "400":
+          description: Invalid request
+  /task/{id}:
+    get:
+      summary: Get Task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task details
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Task not found
+    put:
+      summary: Update a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        "200":
+          description: Task updated successfully
+        "404":
+          description: Task not found
+        "400":
+          description: Invalid request
+    delete:
+      summary: Remove a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Task deleted successfully
+        "404":
+          description: Task not found
