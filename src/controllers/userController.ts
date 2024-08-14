@@ -13,39 +13,51 @@ import {
 const secretKey = "your-secret-key";
 
 export const register = async (req: Request, res: Response) => {
-  const { username, password, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  await createUser({ username, password: hashedPassword, role });
-  res.status(201).send("User created");
+  const { username, email, password, role } = req.body;
+  try {
+    const existingUser = await getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).send("Username already exists");
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await createUser({ username, email, password: hashedPassword, role });
+    res.status(201).send("User created");
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).send("Error creating user");
+  }
 };
 
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
-  const user = await getUserByUsername(username);
-  if (user && (await bcrypt.compare(password, user.password))) {
-    const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
-      expiresIn: "1h",
-    });
-    res.json({ token });
-  } else {
-    res.status(401).send("Invalid credentials");
+  try {
+    const user = await getUserByUsername(username);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign({ id: user.id, role: user.role }, secretKey, {
+        expiresIn: "1h",
+      });
+      res.json({ token });
+    } else {
+      res.status(401).send("Invalid credentials");
+    }
+  } catch (error) {
+    res.status(500).send("Error logging in");
   }
 };
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await getAllUsers(); // Define this function in userModel
+    const users = await getAllUsers();
     res.json(users);
   } catch (error) {
     res.status(500).send("Error retrieving users");
   }
 };
 
-// Get user by ID
 export const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const user = await getUserByIdFromDb(Number(id)); // Define this function in userModel
+    const user = await getUserByIdFromDb(Number(id));
     if (user) {
       res.json(user);
     } else {
@@ -60,7 +72,7 @@ export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   const updates = req.body;
   try {
-    const result = await updateUserInDb(Number(id), updates); // Define this function in userModel
+    const result = await updateUserInDb(Number(id), updates);
     if (result) {
       res.send("User updated");
     } else {
@@ -74,7 +86,7 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const result = await deleteUserFromDb(Number(id)); // Define this function in userModel
+    const result = await deleteUserFromDb(Number(id));
     if (result) {
       res.send("User deleted");
     } else {
